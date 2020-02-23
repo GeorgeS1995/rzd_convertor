@@ -17,6 +17,9 @@ class RZDconverterTestCase(unittest.TestCase):
         self.input_old = op.join(self.test_directory, "./data.xls")
         self.input_old = op.normpath(self.input_old)
 
+        self.empty_input = op.join(self.test_directory, "./empty.xlsx")
+        self.empty_input = op.normpath(self.empty_input)
+
         self.output = "newname.json"
 
         self.result = {
@@ -135,6 +138,8 @@ class RZDconverterTestCase(unittest.TestCase):
             ]
         }
 
+        self.empty = {"Лист1": [{"12e12e": None}], "Лист2": None}
+
     def tearDown(self) -> None:
         for root, dirs, files in os.walk(self.test_directory):
             for file in files:
@@ -149,6 +154,13 @@ class RZDconverterTestCase(unittest.TestCase):
             data = json.load(f)
         self.assertTrue(op.isfile(op.join(self.test_directory, "data.json")))
         self.assertEqual(data, self.result)
+
+    def test_empty_file(self):
+        main(self.empty_input)
+        with open(op.join(self.test_directory, "empty.json"), "r", encoding='utf-8') as f:
+            data = json.load(f)
+        self.assertTrue(op.isfile(op.join(self.test_directory, "empty.json")))
+        self.assertEqual(data, self.empty)
 
     def test_outfile(self):
         main(self.input, self.output)

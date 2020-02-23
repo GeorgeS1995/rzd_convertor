@@ -56,7 +56,18 @@ excel_data_type = {0: excel_empty,
 
 def sheet_parser(sh, dt):
     dt[sh.name] = []
-    keys = sh.row_values(0)
+    try:
+        keys = sh.row_values(0)
+    except IndexError:
+        lh.warning(f"empty list: {sh.name}")
+        dt[sh.name] = None
+        return
+    if sh.nrows == 1:
+        rowsdata = {}
+        for k in keys:
+            rowsdata[k] = None
+        dt[sh.name].append(rowsdata)
+        return
     for row in range(1, sh.nrows):
         rowsdata = {}
         for coll in range(sh.ncols):
